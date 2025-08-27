@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@plugin "daisyui" {
+  themes: forest --default;
+}
+
+* {
+  font-family: "Geist Mono", 'Courier New', Courier, monospace;
+}
