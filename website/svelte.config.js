@@ -17,6 +17,10 @@ const config = {
     csrf: {
       trustedOrigins: ["*"],
     },
+    output: {
+      bundleStrategy: "single",
+      preloadStrategy: "modulepreload",
+    },
   },
 };
 
