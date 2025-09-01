@@ -4,6 +4,7 @@
   import GithubCorner from "./GithubCorner.svelte";
   import { blur } from "svelte/transition";
   import { browser, dev } from "$app/environment";
+  import { onMount } from "svelte";
 
   let timesClicked = $state(0);
   let reloadCaptcha = $state(false);
@@ -11,6 +12,7 @@
   let currentResponse = $state("");
   let hasAsked = $state(false);
   let currentLoadingText = $state("");
+  let currentCount = $state<number | null>(null);
   let error = $state({
     title: "",
     description: "",
@@ -92,20 +94,42 @@
 
     currentLoadingText = getRandomLoadingText();
 
-    // Random delay between 1-4 seconds
-    await new Promise((resolve) => setTimeout(resolve, Math.random() * 3000 + 1000));
-
+    // Random delay between 1-3 seconds (we still need to account the time for the counter request)
+    await new Promise((resolve) => setTimeout(resolve, Math.random() * 2000 + 1000));
     if (cfToken && PUBLIC_COUNTER_URL) {
-      navigator.sendBeacon(
-        PUBLIC_COUNTER_URL,
-        JSON.stringify({ clicked: true, cf_token: $state.snapshot(cfToken) }),
-      );
+      const res = await fetch(PUBLIC_COUNTER_URL, {
+        method: "POST",
+        body: JSON.stringify({ clicked: true, cf_token: $state.snapshot(cfToken) }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).catch((error) => {
+        console.error("Error updating counter:", error);
+      });
+      if (res && res.ok) {
+        const data = await res.text();
+        currentCount = parseInt(data, 10) || 1;
+      } else {
+        console.error("Error updating counter:", res?.statusText);
+      }
     }
 
     currentResponse = getRandomResponse();
     isLoading = false;
     if (!hasAsked) {
       hasAsked = true;
+    }
+  }
+
+  async function fetchCurrentCount() {
+    try {
+      const response = await fetch(PUBLIC_COUNTER_URL + "/current");
+      if (response.ok) {
+        const count = await response.text();
+        currentCount = parseInt(count, 10);
+      }
+    } catch (err) {
+      console.error("Failed to fetch current count:", err);
     }
   }
 
@@ -138,6 +162,10 @@
       };
     };
   }
+
+  onMount(() => {
+    fetchCurrentCount();
+  });
 </script>
 
 <svelte:head>
@@ -235,7 +263,12 @@
 
       <!-- Footer -->
       <div class="border-base-300 text-base-content/40 border-t pt-4 text-xs">
-        Results may vary. Not responsible for broken deployments.
+        <div class="space-y-1">
+          <p>Results may vary. Not responsible for broken deployments.</p>
+          {#if currentCount !== null}
+            <p class="text-base-content/40">{currentCount.toLocaleString()} were unsure about their code.</p>
+          {/if}
+        </div>
       </div>
     </div>
   </div>
