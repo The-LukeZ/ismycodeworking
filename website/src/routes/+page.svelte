@@ -5,6 +5,7 @@
   import { blur } from "svelte/transition";
   import { browser, dev } from "$app/environment";
   import { onMount } from "svelte";
+  import { loadingTexts, responses } from "$lib";
 
   let timesClicked = $state(0);
   let reloadCaptcha = $state(false);
@@ -22,46 +23,6 @@
   // We track the indices of the used items because it's more efficient to look those up instead of whole strings
   let usedResponseIndices = new Set<number>();
   let usedLoadingIndices = new Set<number>();
-
-  const responses = [
-    "No",
-    "Yes",
-    "It was 5 minutes ago",
-    "Maybe",
-    "On my computer",
-    "Have you tried turning it off and on again?",
-    "It depends on what you mean by 'working'",
-    "Ask me again in 10 minutes",
-    "Probably not",
-    "Only on Fridays",
-    "It's complicated",
-    "Define 'working'",
-    "Better than yesterday",
-    "Not since the last deployment",
-    "Ask ChatGPT, not me!",
-    "Not according to one guy from Mongolia",
-    "01101110 01101111",
-  ];
-
-  const loadingTexts = [
-    "Consulting the code gods",
-    "Checking for bugs",
-    "Running diagnostics",
-    "Asking Stack Overflow",
-    "Compiling excuses",
-    "Blaming the intern",
-    "Unplugging the server",
-    "Clearing the cache",
-    "Updating dependencies",
-    "Praying to the demo gods",
-    "Checking if it works on my machine",
-    "Running it in production",
-    "Turning it off and on again",
-    "Consulting the rubber duck",
-    "Asking ChatGPT",
-    "Touching some grass",
-    "Looking at your code",
-  ];
 
   function getRandomIndex(arrayLength: number, usedIndices: Set<number>): number {
     // Reset if all indices used
@@ -202,7 +163,7 @@
           </div>
         {:else if currentResponse}
           <div class="*:select-text">
-            <div class="text-secondary text-3xl font-semibold">
+            <div class="text-secondary text-2xl font-semibold">
               {currentResponse}
             </div>
           </div>
