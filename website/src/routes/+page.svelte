@@ -12,7 +12,7 @@
   let currentResponse = $state("");
   let hasAsked = $state(false);
   let currentLoadingText = $state("");
-  let currentCount = $state<number | null>(null);
+  let currentCount = $state<string | null>(null);
   let error = $state({
     title: "",
     description: "",
@@ -108,7 +108,7 @@
       });
       if (res && res.ok) {
         const data = await res.text();
-        currentCount = parseInt(data, 10) || 1;
+        currentCount = data || "1";
       } else {
         console.error("Error updating counter:", res?.statusText);
       }
@@ -126,7 +126,7 @@
       const response = await fetch(PUBLIC_COUNTER_URL + "/current");
       if (response.ok) {
         const count = await response.text();
-        currentCount = parseInt(count, 10);
+        currentCount = count || "0";
       }
     } catch (err) {
       console.error("Failed to fetch current count:", err);
@@ -265,7 +265,7 @@
           <p>Results may vary. Not responsible for broken deployments.</p>
           {#if currentCount !== null}
             <p class="text-base-content/40">
-              {currentCount.toLocaleString()} individuals were unsure about their code.
+              {BigInt(currentCount).toLocaleString()} individuals were unsure about their code.
             </p>
           {/if}
         </div>
