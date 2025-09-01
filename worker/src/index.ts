@@ -75,7 +75,7 @@ export default {
 
     const currentCount = await stub.increment();
 
-    return new Response(String(currentCount || 1), { headers: { ...corsHeaders } });
+    return new Response(currentCount, { headers: { ...corsHeaders } });
   },
 } satisfies ExportedHandler<Env>;
 
@@ -171,15 +171,15 @@ export class CounterTracker extends DurableObject<Env> {
     });
   }
 
-  async increment(): Promise<bigint> {
+  async increment(): Promise<string> {
     this.clicks++;
     await this.ctx.storage.put("clicks", this.clicks.toString());
     console.log(`Counter incremented to ${this.clicks}`);
-    return this.clicks;
+    return this.clicks.toString(10);
   }
 
-  async getCount(): Promise<bigint> {
-    return this.clicks;
+  async getCount(): Promise<string> {
+    return this.clicks.toString();
   }
 }
 
