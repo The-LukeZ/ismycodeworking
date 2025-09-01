@@ -107,13 +107,10 @@
   }
 
   function onTurnstileSuccess(
-    event: CustomEvent<{
-      token: string;
-      preClearanceObtained: boolean;
-    }>,
+    token: string,
   ) {
-    console.log("Turnstile success:", event.detail.token);
-    cfToken = event.detail.token || "";
+    console.log("Turnstile success:", token);
+    cfToken = token || "";
   }
 
   function onTurnstileError(errorCode: any) {
