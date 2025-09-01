@@ -63,9 +63,9 @@ export default {
 
     const stub = env.COUNTER_TRACKER.getByName("counter");
 
-    await stub.increment();
+    const currentCount = await stub.increment();
 
-    return new Response("ok");
+    return new Response(String(currentCount || 1));
   },
 } satisfies ExportedHandler<Env>;
 
@@ -160,10 +160,11 @@ export class CounterTracker extends DurableObject<Env> {
     });
   }
 
-  async increment(): Promise<void> {
+  async increment(): Promise<number> {
     this.clicks++;
     await this.ctx.storage.put("clicks", this.clicks);
     console.log(`Counter incremented to ${this.clicks}`);
+    return this.clicks;
   }
 
   async getCount(): Promise<number> {
