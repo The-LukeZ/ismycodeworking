@@ -25,7 +25,7 @@ export default {
       if (request.method === "GET" && new URL(request.url).pathname === "/current") {
         const stub = env.COUNTER_TRACKER.getByName("counter");
         const count = await stub.getCount();
-        return new Response(String(count));
+        return new Response(String(count), { headers: { "Access-Control-Allow-Origin": "*" } });
       }
 
       return new Response("Moin", { status: 200 });
@@ -65,7 +65,7 @@ export default {
 
     const currentCount = await stub.increment();
 
-    return new Response(String(currentCount || 1));
+    return new Response(String(currentCount || 1), { headers: { "Access-Control-Allow-Origin": "*" } });
   },
 } satisfies ExportedHandler<Env>;
 
