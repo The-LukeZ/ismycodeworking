@@ -106,9 +106,7 @@
     }
   }
 
-  function onTurnstileSuccess(
-    token: string,
-  ) {
+  function onTurnstileSuccess(token: string) {
     console.log("Turnstile success:", token);
     cfToken = token || "";
   }
@@ -177,11 +175,12 @@
             class="cf-turnstile"
             data-sitekey={PUBLIC_TURNSTILE_SITE_KEY}
             data-theme="dark"
-            data-size={dev ? "normal" : "invisible"}
+            data-size="normal"
             data-callback="onTurnstileSuccess"
             data-error-callback="onTurnstileError"
             data-expired-callback="onTurnstileExpired"
             data-execution="render"
+            data-appearance={dev ? "always" : "interaction-only"}
           ></div>
         {/key}
       </div>
