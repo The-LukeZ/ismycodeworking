@@ -21,14 +21,20 @@ type TurnstileVerifyResponse = {
 
 export default {
   async fetch(request, env, _ctx): Promise<Response> {
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET,HEAD,POST,OPTIONS",
+      "Access-Control-Max-Age": "86400",
+    };
+
     if (request.method !== "POST") {
       if (request.method === "GET" && new URL(request.url).pathname === "/current") {
         const stub = env.COUNTER_TRACKER.getByName("counter");
         const count = await stub.getCount();
-        return new Response(String(count), { headers: { "Access-Control-Allow-Origin": "*" } });
+        return new Response(String(count), { headers: { ...corsHeaders } });
       }
 
-      return new Response("Moin", { status: 200 });
+      return new Response("Moin", { status: 200, headers: { ...corsHeaders } });
     }
 
     const remoteIp =
@@ -36,36 +42,39 @@ export default {
       request.headers.get("cf-Connecting-ip") ||
       request.headers.get("x-real-ip");
     if (remoteIp === null) {
-      return new Response("IP address is missing", { status: 400 });
+      return new Response("IP address is missing", { status: 400, headers: { ...corsHeaders } });
     }
 
     try {
       const stub = env.RATELIMITER.getByName(remoteIp);
       const milliseconds_to_next_request = await stub.getMillisecondsToNextRequest();
       if (milliseconds_to_next_request > 0) {
-        return new Response("Rate limit exceeded", { status: 429 });
+        return new Response("Rate limit exceeded", { status: 429, headers: { ...corsHeaders } });
       }
     } catch (error) {
-      return new Response("Could not connect to rate limiter", { status: 502 });
+      return new Response("Could not connect to rate limiter", { status: 502, headers: { ...corsHeaders } });
     }
     const body = await request.json<any>().catch(() => ({}));
     if (!body?.cf_token) {
-      return new Response("Captcha token is missing", { status: 400 });
+      return new Response("Captcha token is missing", { status: 400, headers: { ...corsHeaders } });
     } else if (!body.clicked === true) {
-      return new Response("Button not clicked", { status: 400 });
+      return new Response("Button not clicked", { status: 400, headers: { ...corsHeaders } });
     }
 
     const cf_token = body.cf_token;
     const result = await new TurnstileValidator(env.CLOUDFLARE_TURNSTILE_SECRET).validate(cf_token, remoteIp);
     if (!result.success) {
-      return new Response(result.error || "Captcha validation failed", { status: 400 });
+      return new Response(result.error || "Captcha validation failed", {
+        status: 400,
+        headers: { ...corsHeaders },
+      });
     }
 
     const stub = env.COUNTER_TRACKER.getByName("counter");
 
     const currentCount = await stub.increment();
 
-    return new Response(String(currentCount || 1), { headers: { "Access-Control-Allow-Origin": "*" } });
+    return new Response(String(currentCount || 1), { headers: { ...corsHeaders } });
   },
 } satisfies ExportedHandler<Env>;
 
