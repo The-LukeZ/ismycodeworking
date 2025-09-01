@@ -52,7 +52,7 @@ export default {
     const cf_token = body.cf_token;
     const result = await new TurnstileValidator(env.CLOUDFLARE_TURNSTILE_SECRET).validate(cf_token, remoteIp);
     if (!result.success) {
-      return new Response("Captcha validation failed", { status: 400 });
+      return new Response(result.error || "Captcha validation failed", { status: 400 });
     }
 
     const stub = env.COUNTER_TRACKER.getByName("counter");
@@ -125,7 +125,11 @@ class TurnstileValidator {
         }
       }
 
-      return result;
+      return {
+        success: true,
+        action: result.action,
+        hostname: result.hostname,
+      };
     } catch (error: any) {
       if (error.name === "AbortError") {
         return { success: false, error: "Validation timeout" };

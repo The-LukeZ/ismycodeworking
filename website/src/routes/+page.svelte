@@ -12,7 +12,7 @@
   let hasAsked = $state(false);
   let currentLoadingText = $state("");
   let error = $state("");
-  let cfToken = "";
+  let cfToken = $state("");
 
   // We track the indices of the used items because it's more efficient to look those up instead of whole strings
   let usedResponseIndices = new Set<number>();
@@ -142,12 +142,6 @@
 
 <GithubCorner href="https://github.com/The-LukeZ/ismycodeworking" />
 
-{#if error !== ""}
-  <div class="alert alert-error alert-vertical sm:alert-horizontal">
-    <span>{error}</span>
-  </div>
-{/if}
-
 <div
   class="from-primary/10 to-secondary/10 flex h-screen w-screen select-none flex-col items-center justify-center bg-gradient-to-br p-4"
 >
@@ -163,10 +157,12 @@
       <!-- Response Area -->
       <div class="min-h-30 flex flex-col items-center justify-center gap-5">
         {#if isLoading}
-          <p class="text-base-content/60 inline-flex items-center gap-1 text-sm">
-            <span>{currentLoadingText}</span>
-            <span class="loading loading-sm loading-dots"></span>
-          </p>
+          <div class="mb-2 mt-3">
+            <p class="text-base-content/60 inline-flex items-center gap-1 text-sm">
+              <span>{currentLoadingText}</span>
+              <span class="loading loading-sm loading-dots"></span>
+            </p>
+          </div>
         {:else if currentResponse}
           <div class="*:select-text">
             <div class="text-secondary text-3xl font-semibold">
@@ -174,12 +170,27 @@
             </div>
           </div>
         {/if}
-        <button onclick={checkCode} class="btn btn-soft btn-lg btn-primary" disabled={isLoading}>
-          {#key hasAsked}
-            <span in:blur>
-              {hasAsked ? "Ask Again" : "Check My Code"}
-            </span>
-          {/key}
+
+        {#if error !== ""}
+          <div class="alert alert-error alert-vertical sm:alert-horizontal w-full">
+            <span>{error}</span>
+          </div>
+        {/if}
+
+        <button
+          onclick={checkCode}
+          class="btn btn-soft btn-lg btn-primary"
+          disabled={cfToken === "" || isLoading}
+        >
+          {#if cfToken !== ""}
+            {#key hasAsked}
+              <span in:blur>
+                {hasAsked ? "Ask Again" : "Check My Code"}
+              </span>
+            {/key}
+          {:else}
+            <span class="loading loading-dots"></span>
+          {/if}
         </button>
         {#key reloadCaptcha}
           <div
