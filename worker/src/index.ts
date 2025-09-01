@@ -22,6 +22,12 @@ type TurnstileVerifyResponse = {
 export default {
   async fetch(request, env, _ctx): Promise<Response> {
     if (request.method !== "POST") {
+      if (request.method === "GET" && new URL(request.url).pathname === "/current") {
+        const stub = env.COUNTER_TRACKER.getByName("counter");
+        const count = await stub.getCount();
+        return new Response(String(count));
+      }
+
       return new Response("Moin", { status: 200 });
     }
 
@@ -158,6 +164,10 @@ export class CounterTracker extends DurableObject<Env> {
     this.clicks++;
     await this.ctx.storage.put("clicks", this.clicks);
     console.log(`Counter incremented to ${this.clicks}`);
+  }
+
+  async getCount(): Promise<number> {
+    return this.clicks;
   }
 }
 
