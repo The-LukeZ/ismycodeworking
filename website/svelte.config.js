@@ -21,6 +21,7 @@ const config = {
       bundleStrategy: "single",
       preloadStrategy: "modulepreload",
     },
+    version: "v1",
   },
 };
 

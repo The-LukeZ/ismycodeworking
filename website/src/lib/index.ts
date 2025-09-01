@@ -49,6 +49,7 @@ export const responses = [
   "It works - but nobody knows why.",
   "Not for everyone.",
   "Ask again at midnight - maybe then it'll work.",
+  "I'm contacting you because of your code's extended warranty."
 ];
 
 export const loadingTexts = [
