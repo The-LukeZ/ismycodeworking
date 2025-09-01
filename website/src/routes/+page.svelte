@@ -133,6 +133,7 @@
   <meta property="og:title" content="Is My Code Working? 🤔" />
   <meta property="og:description" content="Get an answer to the eternal developer question" />
   <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </svelte:head>
 
 <GithubCorner href="https://github.com/The-LukeZ/ismycodeworking" />
