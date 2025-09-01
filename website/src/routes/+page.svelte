@@ -147,7 +147,7 @@
   class="from-primary/10 to-secondary/10 flex h-screen w-screen select-none flex-col items-center justify-center bg-gradient-to-br p-4"
 >
   <div class="card bg-base-100 w-full max-w-md shadow-2xl">
-    <div class="card-body space-y-6 text-center">
+    <div class="card-body gap-5 text-center">
       <!-- Header -->
       <div class="space-y-2">
         <h1 class="text-primary text-3xl font-bold">🤔</h1>
@@ -163,7 +163,7 @@
             <span class="loading loading-sm loading-dots"></span>
           </p>
         {:else if currentResponse}
-          <div class="mt-4 *:select-text">
+          <div class="*:select-text">
             <div class="text-secondary text-3xl font-semibold">
               {currentResponse}
             </div>
