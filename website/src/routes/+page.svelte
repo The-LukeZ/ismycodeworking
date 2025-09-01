@@ -118,6 +118,12 @@
 
   function onTurnstileExpired() {
     cfToken = "";
+    error = "Captcha expired";
+  }
+
+  function onTurnstileTimeout() {
+    cfToken = "";
+    error = "Captcha timed out";
   }
 </script>
 
@@ -179,6 +185,7 @@
             data-callback="onTurnstileSuccess"
             data-error-callback="onTurnstileError"
             data-expired-callback="onTurnstileExpired"
+            data-timeout-callback="onTurnstileTimeout"
             data-execution="render"
             data-appearance={dev ? "always" : "interaction-only"}
           ></div>
