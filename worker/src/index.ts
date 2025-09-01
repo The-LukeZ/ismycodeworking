@@ -161,23 +161,24 @@ class TurnstileValidator {
 
 // Durable Objects
 export class CounterTracker extends DurableObject<Env> {
-  private clicks: number = 0;
+  private clicks: bigint = 0n;
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
     this.ctx.blockConcurrencyWhile(async () => {
-      this.clicks = (await this.ctx.storage.get<number>("clicks")) || 0;
+      const storedClicks = await this.ctx.storage.get<string>("clicks");
+      this.clicks = storedClicks ? BigInt(storedClicks) : 0n;
     });
   }
 
-  async increment(): Promise<number> {
+  async increment(): Promise<bigint> {
     this.clicks++;
-    await this.ctx.storage.put("clicks", this.clicks);
+    await this.ctx.storage.put("clicks", this.clicks.toString());
     console.log(`Counter incremented to ${this.clicks}`);
     return this.clicks;
   }
 
-  async getCount(): Promise<number> {
+  async getCount(): Promise<bigint> {
     return this.clicks;
   }
 }
