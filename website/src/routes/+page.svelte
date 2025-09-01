@@ -1,6 +1,6 @@
 <script lang="ts">
   import { PUBLIC_COUNTER_URL, PUBLIC_TURNSTILE_SITE_KEY } from "$env/static/public";
-  import { Turnstile } from "svelte-turnstile";
+  // import { Turnstile } from "svelte-turnstile";
   import GithubCorner from "./GithubCorner.svelte";
   import { blur } from "svelte/transition";
   import { dev } from "$app/environment";
@@ -143,7 +143,7 @@
 {/if}
 
 <div
-  class="from-primary/10 to-secondary/10 flex h-screen w-screen flex-col items-center justify-center bg-gradient-to-br p-4 select-none"
+  class="from-primary/10 to-secondary/10 flex h-screen w-screen select-none flex-col items-center justify-center bg-gradient-to-br p-4"
 >
   <div class="card bg-base-100 w-full max-w-md shadow-2xl">
     <div class="card-body space-y-6 text-center">
@@ -155,7 +155,7 @@
       </div>
 
       <!-- Response Area -->
-      <div class="flex min-h-30 flex-col items-center justify-center gap-5">
+      <div class="min-h-30 flex flex-col items-center justify-center gap-5">
         {#if isLoading}
           <p class="text-base-content/60 inline-flex items-center gap-1 text-sm">
             <span>{currentLoadingText}</span>
@@ -176,16 +176,16 @@
           {/key}
         </button>
         {#key reloadCaptcha}
-          <Turnstile
-            siteKey={PUBLIC_TURNSTILE_SITE_KEY}
-            on:callback={onTurnstileSuccess}
-            on:error={onTurnstileError}
-            on:expired={onTurnstileExpired}
-            execution="render"
-            appearance={dev ? "always" : "interaction-only"}
-            theme="dark"
-            size={dev ? "normal" : "invisible"}
-          />
+          <div
+            class="cf-turnstile"
+            data-sitekey={PUBLIC_TURNSTILE_SITE_KEY}
+            data-theme="dark"
+            data-size={dev ? "normal" : "invisible"}
+            data-callback="onTurnstileSuccess"
+            data-error-callback="onTurnstileError"
+            data-expired-callback="onTurnstileExpired"
+            data-execution="render"
+          ></div>
         {/key}
       </div>
 
@@ -198,7 +198,7 @@
   <a
     href="https://github.com/The-LukeZ"
     target="_blank"
-    class="text-base-content/30 hover:text-base-content py-1.5 text-[8px] transition-all duration-110 ease-in hover:scale-130"
+    class="text-base-content/30 hover:text-base-content duration-110 hover:scale-130 py-1.5 text-[8px] transition-all ease-in"
     >Made by LukeZ</a
   >
 </div>
