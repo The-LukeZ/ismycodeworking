@@ -8,8 +8,8 @@ Uses turnstile verification and rate limiting to ensure fair usage.
 
 Is this overengineered? Most likely.  
 Do I care? Not really.  
-Was it fun and challenging to implement? Absolutely.  
-Did I learn anything new? Yes!
+Did I learn anything new? Yes!  
+Was it fun and challenging to implement? Absolutely.
 
 Hosted on Cloudflare Workers.
 
