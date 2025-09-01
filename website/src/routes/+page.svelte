@@ -1,11 +1,18 @@
 <script lang="ts">
+  import { PUBLIC_COUNTER_URL, PUBLIC_TURNSTILE_SITE_KEY } from "$env/static/public";
+  import { Turnstile } from "svelte-turnstile";
   import GithubCorner from "./GithubCorner.svelte";
   import { blur } from "svelte/transition";
+  import { dev } from "$app/environment";
 
+  let timesClicked = $state(0);
+  let reloadCaptcha = $state(false);
   let isLoading = $state(false);
   let currentResponse = $state("");
   let hasAsked = $state(false);
   let currentLoadingText = $state("");
+  let error = $state("");
+  let cfToken = "";
 
   // We track the indices of the used items because it's more efficient to look those up instead of whole strings
   let usedResponseIndices = new Set<number>();
@@ -73,17 +80,49 @@
     currentLoadingText = "";
     currentResponse = "";
     isLoading = true;
+    if (timesClicked >= 5) {
+      timesClicked = 0;
+      reloadCaptcha = !reloadCaptcha; // Trigger re-render of captcha
+    } else {
+      timesClicked = timesClicked + 1;
+    }
 
     currentLoadingText = getRandomLoadingText();
 
     // Random delay between 1-4 seconds
     await new Promise((resolve) => setTimeout(resolve, Math.random() * 3000 + 1000));
 
+    if (cfToken && PUBLIC_COUNTER_URL) {
+      navigator.sendBeacon(
+        PUBLIC_COUNTER_URL,
+        JSON.stringify({ clicked: true, cf_token: $state.snapshot(cfToken) }),
+      );
+    }
+
     currentResponse = getRandomResponse();
     isLoading = false;
     if (!hasAsked) {
       hasAsked = true;
     }
+  }
+
+  function onTurnstileSuccess(
+    event: CustomEvent<{
+      token: string;
+      preClearanceObtained: boolean;
+    }>,
+  ) {
+    console.log("Turnstile success:", event.detail.token);
+    cfToken = event.detail.token || "";
+  }
+
+  function onTurnstileError(errorCode: any) {
+    cfToken = "";
+    error = `Error Code: ${errorCode}`;
+  }
+
+  function onTurnstileExpired() {
+    cfToken = "";
   }
 </script>
 
@@ -97,14 +136,20 @@
 
 <GithubCorner href="https://github.com/The-LukeZ/ismycodeworking" />
 
+{#if error !== ""}
+  <div class="alert alert-error alert-vertical sm:alert-horizontal">
+    <span>{error}</span>
+  </div>
+{/if}
+
 <div
-  class="flex h-screen w-screen flex-col items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 p-4 select-none"
+  class="from-primary/10 to-secondary/10 flex h-screen w-screen flex-col items-center justify-center bg-gradient-to-br p-4 select-none"
 >
-  <div class="card w-full max-w-md bg-base-100 shadow-2xl">
+  <div class="card bg-base-100 w-full max-w-md shadow-2xl">
     <div class="card-body space-y-6 text-center">
       <!-- Header -->
       <div class="space-y-2">
-        <h1 class="text-3xl font-bold text-primary">🤔</h1>
+        <h1 class="text-primary text-3xl font-bold">🤔</h1>
         <h2 class="text-2xl font-bold">Is my code working?</h2>
         <p class="text-base-content/70">The eternal developer question</p>
       </div>
@@ -112,13 +157,13 @@
       <!-- Response Area -->
       <div class="flex h-30 flex-col items-center justify-center gap-5">
         {#if isLoading}
-          <p class="inline-flex items-center gap-1 text-sm text-base-content/60">
+          <p class="text-base-content/60 inline-flex items-center gap-1 text-sm">
             <span>{currentLoadingText}</span>
             <span class="loading loading-sm loading-dots"></span>
           </p>
         {:else if currentResponse}
-          <div class="space-y-4">
-            <div class="text-3xl font-semibold text-secondary">
+          <div class="space-y-4 *:select-text">
+            <div class="text-secondary text-3xl font-semibold">
               {currentResponse}
             </div>
           </div>
@@ -130,10 +175,22 @@
             </span>
           {/key}
         </button>
+        {#key reloadCaptcha}
+          <Turnstile
+            siteKey={PUBLIC_TURNSTILE_SITE_KEY}
+            on:callback={onTurnstileSuccess}
+            on:error={onTurnstileError}
+            on:expired={onTurnstileExpired}
+            execution="render"
+            appearance={dev ? "always" : "interaction-only"}
+            theme="dark"
+            size={dev ? "normal" : "invisible"}
+          />
+        {/key}
       </div>
 
       <!-- Footer -->
-      <div class="border-t border-base-300 pt-4 text-xs text-base-content/40">
+      <div class="border-base-300 text-base-content/40 border-t pt-4 text-xs">
         Results may vary. Not responsible for broken deployments.
       </div>
     </div>
@@ -141,7 +198,7 @@
   <a
     href="https://github.com/The-LukeZ"
     target="_blank"
-    class="py-1.5 text-[8px] text-base-content/30 transition-all duration-110 ease-in hover:scale-130 hover:text-base-content"
+    class="text-base-content/30 hover:text-base-content py-1.5 text-[8px] transition-all duration-110 ease-in hover:scale-130"
     >Made by LukeZ</a
   >
 </div>

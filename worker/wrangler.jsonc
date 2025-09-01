@@ -1,0 +1,38 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ismycodeworking-counter",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-08-31",
+  "observability": {
+    "enabled": true,
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "COUNTER_TRACKER",
+        "class_name": "CounterTracker",
+      },
+      {
+        "name": "RATELIMITER",
+        "class_name": "RateLimiter",
+      },
+    ],
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["CounterTracker", "RateLimiter"],
+    },
+  ],
+  "routes": [
+    {
+      "custom_domain": true,
+      "pattern": "counter.ismycodeworking.today",
+    },
+  ],
+  "workers_dev": false,
+}
