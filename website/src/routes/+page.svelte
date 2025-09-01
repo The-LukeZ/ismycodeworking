@@ -236,11 +236,9 @@
           disabled={cfToken === "" || isLoading}
         >
           {#if cfToken !== ""}
-            {#key hasAsked}
-              <span in:blur>
-                {hasAsked ? "Ask Again" : "Check My Code"}
-              </span>
-            {/key}
+            <span>
+              {hasAsked ? "Ask Again" : "Check My Code"}
+            </span>
           {:else}
             <span class="loading loading-dots"></span>
           {/if}
@@ -263,10 +261,12 @@
 
       <!-- Footer -->
       <div class="border-base-300 text-base-content/40 border-t pt-4 text-xs">
-        <div class="space-y-1">
+        <div class="space-y-1.5">
           <p>Results may vary. Not responsible for broken deployments.</p>
           {#if currentCount !== null}
-            <p class="text-base-content/40">{currentCount.toLocaleString()} were unsure about their code.</p>
+            <p class="text-base-content/40">
+              {currentCount.toLocaleString()} individuals were unsure about their code.
+            </p>
           {/if}
         </div>
       </div>
