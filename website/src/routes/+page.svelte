@@ -155,14 +155,14 @@
       </div>
 
       <!-- Response Area -->
-      <div class="flex h-30 flex-col items-center justify-center gap-5">
+      <div class="flex min-h-30 flex-col items-center justify-center gap-5">
         {#if isLoading}
           <p class="text-base-content/60 inline-flex items-center gap-1 text-sm">
             <span>{currentLoadingText}</span>
             <span class="loading loading-sm loading-dots"></span>
           </p>
         {:else if currentResponse}
-          <div class="space-y-4 *:select-text">
+          <div class="mt-4 *:select-text">
             <div class="text-secondary text-3xl font-semibold">
               {currentResponse}
             </div>
