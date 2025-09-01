@@ -21,7 +21,10 @@ const config = {
       bundleStrategy: "single",
       preloadStrategy: "modulepreload",
     },
-    version: "v1",
+    version: {
+      name: "v1",
+      pollInterval: 300_000,
+    },
   },
 };
 
