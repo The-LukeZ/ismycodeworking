@@ -3,7 +3,7 @@
   // import { Turnstile } from "svelte-turnstile";
   import GithubCorner from "./GithubCorner.svelte";
   import { blur } from "svelte/transition";
-  import { dev } from "$app/environment";
+  import { browser, dev } from "$app/environment";
 
   let timesClicked = $state(0);
   let reloadCaptcha = $state(false);
@@ -106,24 +106,28 @@
     }
   }
 
-  function onTurnstileSuccess(token: string) {
-    console.log("Turnstile success:", token);
-    cfToken = token || "";
-  }
+  // Seems like sveltekit doesn't preserve functions when declared "just in the script tag"
+  // That is why we need to attach them to the window
+  if (browser) {
+    window.onTurnstileSuccess = function onTurnstileSuccess(token: string) {
+      console.log("Turnstile success!", token);
+      cfToken = token || "";
+    };
 
-  function onTurnstileError(errorCode: any) {
-    cfToken = "";
-    error = `Error Code: ${errorCode}`;
-  }
+    window.onTurnstileError = function onTurnstileError(errorCode: any) {
+      cfToken = "";
+      error = `Error Code: ${errorCode}`;
+    };
 
-  function onTurnstileExpired() {
-    cfToken = "";
-    error = "Captcha expired";
-  }
+    window.onTurnstileExpired = function onTurnstileExpired() {
+      cfToken = "";
+      error = "Captcha expired";
+    };
 
-  function onTurnstileTimeout() {
-    cfToken = "";
-    error = "Captcha timed out";
+    window.onTurnstileTimeout = function onTurnstileTimeout() {
+      cfToken = "";
+      error = "Captcha timed out";
+    };
   }
 </script>
 

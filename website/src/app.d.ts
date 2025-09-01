@@ -8,6 +8,13 @@ declare global {
       ctx: ExecutionContext;
     }
   }
+
+  interface Window {
+    onTurnstileSuccess: (token: string) => void;
+    onTurnstileError: (errorCode: any) => void;
+    onTurnstileExpired: () => void;
+    onTurnstileTimeout: () => void;
+  }
 }
 
 export {};
