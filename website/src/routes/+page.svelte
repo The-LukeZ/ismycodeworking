@@ -11,7 +11,10 @@
   let currentResponse = $state("");
   let hasAsked = $state(false);
   let currentLoadingText = $state("");
-  let error = $state("");
+  let error = $state({
+    title: "",
+    description: "",
+  });
   let cfToken = $state("");
 
   // We track the indices of the used items because it's more efficient to look those up instead of whole strings
@@ -116,17 +119,23 @@
 
     window.onTurnstileError = function onTurnstileError(errorCode: any) {
       cfToken = "";
-      error = `Error Code: ${errorCode}`;
+      error = {
+        title: "Turnstile Error",
+        description: `Error Code: ${errorCode}`,
+      };
     };
 
     window.onTurnstileExpired = function onTurnstileExpired() {
       cfToken = "";
-      error = "Captcha expired";
+      reloadCaptcha = !reloadCaptcha; // Trigger re-render of captcha
     };
 
     window.onTurnstileTimeout = function onTurnstileTimeout() {
       cfToken = "";
-      error = "Captcha timed out";
+      error = {
+        title: "Turnstile Timeout",
+        description: "Captcha timed out. Please refresh the page.",
+      };
     };
   }
 </script>
@@ -171,9 +180,25 @@
           </div>
         {/if}
 
-        {#if error !== ""}
+        {#if error.title !== ""}
           <div class="alert alert-error alert-vertical sm:alert-horizontal w-full">
-            <span>{error}</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 shrink-0 stroke-current"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <div>
+              <h3 class="font-bold">{error.title}</h3>
+              <div class="text-xs">{error.description}</div>
+            </div>
           </div>
         {/if}
 
