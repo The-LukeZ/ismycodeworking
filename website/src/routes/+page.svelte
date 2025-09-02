@@ -227,9 +227,8 @@
         <div class="space-y-1.5">
           <p>Results may vary. Not responsible for broken deployments.</p>
           {#if currentCount !== null}
-            <p class="text-base-content/40">
-              Devs were {BigInt(currentCount).toLocaleString()}x unsure about their code.
-            </p>
+            {@const currentCountText = `Devs were ${BigInt(currentCount).toLocaleString()}x unsure about their code.`}
+            <p class="text-base-content/40">{currentCountText}</p>
           {/if}
         </div>
       </div>
