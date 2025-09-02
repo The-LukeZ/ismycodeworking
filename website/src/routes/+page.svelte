@@ -192,9 +192,11 @@
         {/if}
 
         <button
-          onclick={checkCode}
+          aria-label="Check if my code is working"
+          aria-busy={isLoading}
           class="btn btn-soft btn-lg btn-primary"
           disabled={cfToken === "" || isLoading}
+          onclick={checkCode}
         >
           {#if cfToken !== ""}
             <span>
