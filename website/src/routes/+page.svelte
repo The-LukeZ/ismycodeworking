@@ -228,7 +228,7 @@
           <p>Results may vary. Not responsible for broken deployments.</p>
           {#if currentCount !== null}
             <p class="text-base-content/40">
-              {BigInt(currentCount).toLocaleString()} individuals were unsure about their code.
+              Devs were {BigInt(currentCount).toLocaleString()}x unsure about their code.
             </p>
           {/if}
         </div>
